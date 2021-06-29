@@ -6,14 +6,16 @@ import math
 
 def main(name_ofSVG):
 
-    canvus_height = 100              # max height of the "paper"
-    add_circles_to_points = True
+    canvus_height = 100                       # max height of the "paper"
+    Numbers_of_Lines = 30                     # 10
+    add_circles_to_points =  True #False
     lines = list()
-    lines.append(generate_points(0, 0, 20, canvus_height, 2, 10, 2, 5))
-    lines.append(generate_points(10, 0, 20, canvus_height, 2, 10, 2, 5))
-    lines.append(generate_points(20, 0, 20, canvus_height, 2, 10, 2, 10))
-    lines.append(generate_points(30, 0, 20, canvus_height, 2, 10, 2, 10))
-    lines.append(generate_points(40, 0, 20, canvus_height, 2, 10, 2, 10))
+    I = 0                                     # lines start at X = 0
+    while I < Numbers_of_Lines:
+        #lines.append(generate_points(    0, 0, 20, canvus_height, 2, 10, 2, 5))
+        lines.append(generate_points((I*10), 0, 20, canvus_height, 2, 10, 2, 5))
+        I += 1
+
     render_svg(lines, add_circles_to_points, name_ofSVG)
 
 
@@ -28,10 +30,8 @@ def generate_points(
         max_straight_line_lenght):
 
     points = list()                 # array to store line points.
-
     # end of segment could start at any point in bound
-    x_new = random.randint(line_boundry_startX,
-                           (line_boundry_startX + line_boundry_width))
+    x_new = int(random.randint(int(line_boundry_startX), int((line_boundry_startX + line_boundry_width))))
     y_new = line_boundry_starty
 
     x_current = 0
