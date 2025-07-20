@@ -8,7 +8,7 @@ import numpy as np
 
 def main(name_ofSVG):
 
-    canvus_height = 100                       # max height of the "paper"
+    canvus_height = 10                       # max height of the "paper"
     Numbers_of_Lines = 30                     # 10
     add_circles_to_points =  True #False
     lines = list()
@@ -38,7 +38,7 @@ def create_square_grid(grid_size, spacing=1.0):
     return grid_points
 
 # Example usage:
-grid = create_square_grid(grid_size=5, spacing=1.0)
+grid = create_square_grid(grid_size=50, spacing=1.0)
 print(grid)
 
 
@@ -96,49 +96,36 @@ def get_next_x(min_line_lenght, max_line_lenght, x_current):
     return x_new
 
 
-def render_svg(lines, add_circles_to_points, svg_output_file):
-    dwg = svgwrite.Drawing(filename=svg_output_file, debug=True)
-    # Rendering goes here
-    toCm = 35.43307  # https://github.com/mozman/svgwrite/blob/master/doc/overview.rst
+def draw_svg_grid(grid_points, filename="grid.svg", scale=20, circle_radius=3):
+    """
+    Draws an SVG with a circle at each grid point.
 
-    dwg.add(dwg.rect(insert=(0, 0), size=('100%', '100%'),
-                     rx=None, ry=None, fill='rgb(0,0,5)'))
+    Parameters:
+        grid_points (ndarray): Array of shape (N, 2) with (x, y) coordinates.
+        filename (str): Output SVG file name.
+        scale (int): Multiplier to scale grid points into pixels.
+        circle_radius (int): Radius of each circle in pixels.
+    """
+    # Determine canvas size based on max coordinates
+    max_x = np.max(grid_points[:, 0]) * scale + scale
+    max_y = np.max(grid_points[:, 1]) * scale + scale
+    dwg = svgwrite.Drawing(filename, size=(max_x, max_y))
 
-    
-   #print("({},{}) ({},{})".format(first_x, first_y, last_x, last_y))
-    # for points in lines:
-    #     polyline = dwg.polyline(id='vline', stroke='blue',
-    #                             fill_opacity=0, stroke_width=10)
-    #     for point_index in range((len(points))):
-    #         point = points[point_index]
-    #         first_x = point[0]
-    #         first_y = point[1]
-    #         polyline.points.append((first_x*toCm, first_y*toCm))
-    #     dwg.add(polyline)
+    for point in grid_points:
+        px = point[0] * scale
+        py = point[1] * scale
+        dwg.add(dwg.circle(center=(px, py), r=circle_radius, fill='black'))
 
-    # if add_circles_to_points:
-    #     for points in lines:
-    #         for point_index in range((len(points))):
-    #             point = points[point_index]
-    #             first_x = point[0]
-    #             first_y = point[1]
-    #             circle = dwg.circle(center=(first_x*toCm, first_y*toCm),
-                 circle = dwg.circle(center=(grid),
-                                     r='0.5cm', stroke='blue', stroke_width=3, fill='blue')
-                 circle['class'] = 'class1 class2'
-                 dwg.add(circle)
-                 circle = dwg.circle(center=(first_x*toCm, first_y*toCm),
-                                     r='0.3cm', stroke='black', stroke_width=3, fill='black')
-                 circle['class'] = 'class1 class2'
-                 dwg.add(circle)
+# Draw polyline connecting points in order
+    polyline = dwg.polyline(fill='none', stroke='blue', stroke_width=2)
 
-                for x, y in grid_points:
-                    polyline.points.append((x * scale, y * scale))
-                    dwg.add(polyline)
+    for x, y in grid_points:
+        polyline.points.append((x * scale, y * scale))
+
+    dwg.add(polyline)
     dwg.save()
-
-     dwg.save()
 
 
 if __name__ == '__main__':
-    main('shapes.svg')
+    grid_points = create_square_grid(grid_size=60, spacing=1.0)
+    draw_svg_grid(grid_points, filename="grid_circles.svg", scale=30, circle_radius=4)
